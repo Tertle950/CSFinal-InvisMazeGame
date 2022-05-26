@@ -1,4 +1,8 @@
+#!/usr/bin/env python3
+
 import string
+import libxmplite
+
 # Problem: My kids need a distraction, but all I have is a Linux terminal and a Python interpreter!
 
 print("Terminal-based slippery maze game on Python - Sample create task")
