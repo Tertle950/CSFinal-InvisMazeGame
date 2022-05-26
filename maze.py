@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import string
+import curses
 import libxmplite
 #https://stackoverflow.com/questions/3523174/raw-input-without-pressing-enter
 
@@ -79,49 +80,50 @@ for idex,i in enumerate(mazeChars):
         if(j == "░"):
             goalCoord = []
 
-while True:
-    # Ask for input from the player. UDLR accepted.
-    direction = [None]
+def game(mazeChars):
+    while True:
+        # Ask for input from the player. UDLR accepted.
+        direction = [None]
 
-    # Interpret the input.
-    ch = [0, 0]
-    try:
-        if direction[0] == "d":
-            ch = [0, 1]
-        if direction[0] == "a":
-            ch = [0, -1]
-        if direction[0] == "s":
-            ch = [1, 0]
-        if direction[0] == "w":
-            ch = [-1, 0]
-    except(IndexError):
-        print("☺  { Please type a direction for me to go. )")
-        continue
+        # Interpret the input.
+        ch = [0, 0]
+        try:
+            if direction[0] == "d":
+                ch = [0, 1]
+            if direction[0] == "a":
+                ch = [0, -1]
+            if direction[0] == "s":
+                ch = [1, 0]
+            if direction[0] == "w":
+                ch = [-1, 0]
+        except(IndexError):
+            print("☺  { Please type a direction for me to go. )")
+            continue
 
-    #print("ch is: {}".format(ch))
+        #print("ch is: {}".format(ch))
 
-    if(ch[0] + ch[1] == 0):
-        print("☺  { Please type a direction for me to go. )")
-        continue
-    new = [smileyCoord[0] + ch[0], smileyCoord[1] + ch[1]]
-    if (mazeChars[new[0]][new[1]] == "█"): # This is a mess.
-        print("☺  { Please type a direction for me to go. )")
-        continue
+        if(ch[0] + ch[1] == 0):
+            print("☺  { Please type a direction for me to go. )")
+            continue
+        new = [smileyCoord[0] + ch[0], smileyCoord[1] + ch[1]]
+        if (mazeChars[new[0]][new[1]] == "█"): # This is a mess.
+            print("☺  { Please type a direction for me to go. )")
+            continue
 
-    #print("smileyCoord was: {}".format(smileyCoord))
-    mazeChars[smileyCoord[0]][smileyCoord[1]] = " "
-    mazeChars[new[0]][new[1]] = "☺"
+        #print("smileyCoord was: {}".format(smileyCoord))
+        mazeChars[smileyCoord[0]][smileyCoord[1]] = " "
+        mazeChars[new[0]][new[1]] = "☺"
 
-    # Print the maze again, and reinitialize the coordinates of the character.
-    smileyCoord = dontPrintMaze(mazeChars)
-    if smileyCoord == [-1, -1]:
-        raise Exception("Smiley's gone?")
-    #print("smileyCoord is: {}".format(smileyCoord))
-    #print("smileyCoord is: {}".format(goalCoord))
+        # Print the maze again, and reinitialize the coordinates of the character.
+        smileyCoord = dontPrintMaze(mazeChars)
+        if smileyCoord == [-1, -1]:
+            raise Exception("Smiley's gone?")
+        #print("smileyCoord is: {}".format(smileyCoord))
+        #print("smileyCoord is: {}".format(goalCoord))
 
 
-    # Check for victory.
-    if smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
-        break
+        # Check for victory.
+        if smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
+            return
 
 print("Congratulations! You won!")
