@@ -5,8 +5,6 @@ import libxmplite
 
 # Problem: My kids need a distraction, but all I have is a Linux terminal and a Python interpreter!
 
-print("Terminal-based slippery maze game on Python - Sample create task")
-
 # import only system from os
 from os import system, name
   
@@ -14,7 +12,6 @@ from os import system, name
 from time import sleep
 
 def printMaze(maze):
-    clear()
     returner = [-1, -1]
     for dex,i in enumerate(maze):
         line = ""
@@ -26,7 +23,6 @@ def printMaze(maze):
     return returner
 
 def dontPrintMaze(maze):
-    clear()
     returner = [-1, -1]
     for dex,i in enumerate(maze):
         line = ""
@@ -75,7 +71,7 @@ for idex,i in enumerate(mazeChars):
 
 while True:
     # Ask for input from the player. UDLR accepted.
-    print("☺  { Which way should I go? (U)p, (D)own, (L)eft, or (R)ight? )")
+    print("☺  { WASD to move. )")
     direction = input("> ").lower()
 
     # Interpret the input.
