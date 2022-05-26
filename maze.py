@@ -2,6 +2,7 @@
 
 import string
 import libxmplite
+#https://stackoverflow.com/questions/3523174/raw-input-without-pressing-enter
 
 # Problem: My kids need a distraction, but all I have is a Linux terminal and a Python interpreter!
 
@@ -10,6 +11,16 @@ from os import system, name
   
 # import sleep to show output for some time period
 from time import sleep
+
+def clear():
+  
+    # for windows
+    if name == 'nt':
+        _ = system('cls')
+  
+    # for mac and linux(here, os.name is 'posix')
+    else:
+        _ = system('clear')
 
 def printMaze(maze):
     returner = [-1, -1]
@@ -63,27 +74,25 @@ smileyCoord = printMaze(mazeChars)
 
 goalCoord = None
 for idex,i in enumerate(mazeChars):
-    if(goalCoord != None): break
+    if(goalCoord is not None): break
     for jdex,j in enumerate(i):
         if(j == "░"):
             goalCoord = []
 
-
 while True:
     # Ask for input from the player. UDLR accepted.
-    print("☺  { WASD to move. )")
-    direction = input("> ").lower()
+    direction = [None]
 
     # Interpret the input.
     ch = [0, 0]
     try:
-        if direction[0] == "r":
-            ch = [0, 1]
-        if direction[0] == "l":
-            ch = [0, -1]
         if direction[0] == "d":
+            ch = [0, 1]
+        if direction[0] == "a":
+            ch = [0, -1]
+        if direction[0] == "s":
             ch = [1, 0]
-        if direction[0] == "u":
+        if direction[0] == "w":
             ch = [-1, 0]
     except(IndexError):
         print("☺  { Please type a direction for me to go. )")
