@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 
 import string
+#import keyboard
 import curses
 import libxmplite
 #https://stackoverflow.com/questions/3523174/raw-input-without-pressing-enter
 
 # Problem: My kids need a distraction, but all I have is a Linux terminal and a Python interpreter!
 
-# import only system from os
-from os import system, name
-  
-# import sleep to show output for some time period
-from time import sleep
+stdscr = curses.initscr()
+curses.noecho()
+curses.cbreak()
+stdscr.keypad(True)
 
+from os import system, name
 def clear():
   
     # for windows
@@ -51,17 +52,17 @@ def dontPrintMaze(maze):
 
 # The maze itself is a constant.
 mazeStrings = [
-    "████████████",
-    "█☺█        █",
-    "█    █     █",
-    "█   ███    █",
-    "███    █   █",
-    "█       █  █",
-    "██  █     ██",
-    "█  █ █   █  ",
-    "█     █ █ ██",
-    "█  █      ░█",
-    "████████████"] # It's a lot easier to write it this way.
+    "█████████████",
+    "█☺█         █",
+    "█     █     █",
+    "█    ███    █",
+    "███     █   █",
+    "█        █  █",
+    "██  █      ██",
+    "█  █ █    █  ",
+    "█     █  █ ██",
+    "█  █       ░█",
+    "█████████████"] # It's a lot easier to write it this way.
 
 # ...but here's what I'm REALLY gonna use!
 mazeChars = []
@@ -83,35 +84,35 @@ for dex,i in enumerate(mazeChars):
 
 def game(mazeChars):
     while True:
-        # Check for victory.
-        if smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
+        char = stdscr.getKey()
+        if goSmiley(char) and smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
             return
 
 def goSmiley(direction):
     # Interpret the input.
     ch = [0, 0]
     try:
-        if direction[0] == "d":
+        if direction == "d":
             ch = [0, 1]
-        if direction[0] == "a":
+        if direction == "a":
             ch = [0, -1]
-        if direction[0] == "s":
+        if direction == "s":
             ch = [1, 0]
-        if direction[0] == "w":
+        if direction == "w":
             ch = [-1, 0]
     except(IndexError):
-        print("☺  { Please type a direction for me to go. )")
-        continue
+        #print("☺  { Please type a direction for me to go. )")
+        return False
 
     #print("ch is: {}".format(ch))
 
     if(ch[0] + ch[1] == 0):
-        print("☺  { Please type a direction for me to go. )")
-        continue
+        #print("☺  { Please type a direction for me to go. )")
+        return False
     new = [smileyCoord[0] + ch[0], smileyCoord[1] + ch[1]]
     if (mazeChars[new[0]][new[1]] == "█"): # This is a mess.
-        print("☺  { Please type a direction for me to go. )")
-        continue
+        #print("☺  { Please type a direction for me to go. )")
+        return False
 
     #print("smileyCoord was: {}".format(smileyCoord))
     mazeChars[smileyCoord[0]][smileyCoord[1]] = " "
@@ -123,6 +124,12 @@ def goSmiley(direction):
         raise Exception("Smiley's gone?")
     #print("smileyCoord is: {}".format(smileyCoord))
     #print("smileyCoord is: {}".format(goalCoord))
+    return True
 
 game(mazeChars)
+
+curses.nocbreak()
+stdscr.keypad(False)
+curses.echo()
+curses.endwin()
 print("Congratulations! You won!")
