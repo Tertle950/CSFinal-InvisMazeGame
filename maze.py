@@ -12,19 +12,18 @@ stdscr = curses.initscr()
 curses.noecho()
 curses.cbreak()
 stdscr.keypad(True)
+stdscr.clear()
+stdscr.refresh()
+curses.start_color()
 
-from os import system, name
+line = 0
+
 def clear():
-  
-    # for windows
-    if name == 'nt':
-        _ = system('cls')
-  
-    # for mac and linux(here, os.name is 'posix')
-    else:
-        _ = system('clear')
+    stdscr.clear()
+    line = 0
 
 def printMaze(maze):
+    clear()
     returner = [-1, -1]
     for dex,i in enumerate(maze):
         line = ""
@@ -36,6 +35,7 @@ def printMaze(maze):
     return returner
 
 def dontPrintMaze(maze):
+    clear()
     returner = [-1, -1]
     for dex,i in enumerate(maze):
         line = ""
@@ -84,7 +84,7 @@ for dex,i in enumerate(mazeChars):
 
 def game(mazeChars):
     while True:
-        char = stdscr.getKey()
+        char = stdscr.getch()
         if goSmiley(char) and smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
             return
 
@@ -92,13 +92,13 @@ def goSmiley(direction):
     # Interpret the input.
     ch = [0, 0]
     try:
-        if direction == "d":
+        if direction == 'd':
             ch = [0, 1]
-        if direction == "a":
+        if direction == 'a':
             ch = [0, -1]
-        if direction == "s":
+        if direction == 's':
             ch = [1, 0]
-        if direction == "w":
+        if direction == 'w':
             ch = [-1, 0]
     except(IndexError):
         #print("☺  { Please type a direction for me to go. )")
