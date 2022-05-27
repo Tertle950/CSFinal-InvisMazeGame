@@ -16,11 +16,18 @@ stdscr.clear()
 stdscr.refresh()
 curses.start_color()
 
-line = 0
+cuLine = 0
 
 def clear():
     stdscr.clear()
-    line = 0
+    global cuLine
+    cuLine = 0
+
+def cuPrint(x):
+    global cuLine
+    stdscr.addstr(cuLine+2, 1+2, x)
+    cuLine += 1
+    return
 
 def printMaze(maze):
     clear()
@@ -28,10 +35,12 @@ def printMaze(maze):
     for dex,i in enumerate(maze):
         line = ""
         for ind,j in enumerate(i):
-            line += j
-            if j == "☺":
+            if j == " ":
+                line += "."
+            else: line += j
+            if j == "U":
                 returner = [dex, ind]
-        print(line)
+        cuPrint(line)
     return returner
 
 def dontPrintMaze(maze):
@@ -40,29 +49,29 @@ def dontPrintMaze(maze):
     for dex,i in enumerate(maze):
         line = ""
         for ind,j in enumerate(i):
-            if j == "☺" or j == "░":
-                if j == "☺": returner = [dex, ind]
+            if j == "U" or j == "░":
+                if j == "U": returner = [dex, ind]
                 line += j
             else:
-                line += " "
-        print(line)
+                line += "."
+        cuPrint(line)
     return returner
 
 # def
 
 # The maze itself is a constant.
 mazeStrings = [
-    "█████████████",
-    "█☺█         █",
+    " █████████   ",
+    "█U█       ██ ",
     "█     █     █",
-    "█    ███    █",
-    "███     █   █",
-    "█        █  █",
-    "██  █      ██",
-    "█  █ █    █  ",
-    "█     █  █ ██",
+    "█    █ █    █",
+    " ██     █   █",
+    "█    █   █  █",
+    " █  █ █    █ ",
+    "█   █ █   █  ",
+    "█    ██  █ █ ",
     "█  █       ░█",
-    "█████████████"] # It's a lot easier to write it this way.
+    " ███████████ "] # It's a lot easier to write it this way.
 
 # ...but here's what I'm REALLY gonna use!
 mazeChars = []
@@ -84,46 +93,47 @@ for dex,i in enumerate(mazeChars):
 
 def game(mazeChars):
     while True:
-        char = stdscr.getch()
-        if goSmiley(char) and smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
+        chara = stdscr.getch()
+        if goSmiley(chara) and smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
             return
 
 def goSmiley(direction):
+    global smileyCoord
     # Interpret the input.
     ch = [0, 0]
     try:
-        if direction == 'd':
+        if direction == 100: #d
             ch = [0, 1]
-        if direction == 'a':
+        if direction == 97: #a
             ch = [0, -1]
-        if direction == 's':
+        if direction == 115: #s
             ch = [1, 0]
-        if direction == 'w':
+        if direction == 119: #w
             ch = [-1, 0]
     except(IndexError):
-        #print("☺  { Please type a direction for me to go. )")
+        #cuPrint("U  { Please type a direction for me to go. )")
         return False
 
-    #print("ch is: {}".format(ch))
+    #cuPrint("ch is: {}".format(ch))
 
     if(ch[0] + ch[1] == 0):
-        #print("☺  { Please type a direction for me to go. )")
+        #cuPrint("U  { Please type a direction for me to go. )")
         return False
     new = [smileyCoord[0] + ch[0], smileyCoord[1] + ch[1]]
     if (mazeChars[new[0]][new[1]] == "█"): # This is a mess.
-        #print("☺  { Please type a direction for me to go. )")
+        #cuPrint("U  { Please type a direction for me to go. )")
         return False
 
-    #print("smileyCoord was: {}".format(smileyCoord))
+    #cuPrint("smileyCoord was: {}".format(smileyCoord))
     mazeChars[smileyCoord[0]][smileyCoord[1]] = " "
-    mazeChars[new[0]][new[1]] = "☺"
+    mazeChars[new[0]][new[1]] = "U"
 
     # Print the maze again, and reinitialize the coordinates of the character.
     smileyCoord = dontPrintMaze(mazeChars)
     if smileyCoord == [-1, -1]:
         raise Exception("Smiley's gone?")
-    #print("smileyCoord is: {}".format(smileyCoord))
-    #print("smileyCoord is: {}".format(goalCoord))
+    #cuPrint("smileyCoord is: {}".format(smileyCoord))
+    #cuPrint("smileyCoord is: {}".format(goalCoord))
     return True
 
 game(mazeChars)
@@ -132,4 +142,4 @@ curses.nocbreak()
 stdscr.keypad(False)
 curses.echo()
 curses.endwin()
-print("Congratulations! You won!")
+print("U got to the end!")
