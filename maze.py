@@ -55,9 +55,7 @@ def dontPrintMaze(maze):
             else:
                 line += "."
         cuPrint(line)
-    return returner
-
-# def
+    return returne
 
 # The maze itself is a constant.
 mazeStrings = [
