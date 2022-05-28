@@ -34,9 +34,13 @@ def printMaze(maze):
     returner = [-1, -1]
     for dex,i in enumerate(maze):
         line = ""
+        dots = False
         for ind,j in enumerate(i):
-            if j == " ":
+            if j == " " and dots:
                 line += "."
+            elif j == "█":
+                dots = True
+                line += "█"
             else: line += j
             if j == "U":
                 returner = [dex, ind]
@@ -48,54 +52,60 @@ def dontPrintMaze(maze):
     returner = [-1, -1]
     for dex,i in enumerate(maze):
         line = ""
+        dots = False
         for ind,j in enumerate(i):
             if j == "U" or j == "░":
                 if j == "U": returner = [dex, ind]
                 line += j
-            else:
+            elif j == "█":
+                dots = True
                 line += "."
+            elif dots:
+                line += "."
+            else: line += " "
         cuPrint(line)
-    return returne
+    return returner
 
-# The maze itself is a constant.
-mazeStrings = [
-    " █████████   ",
-    "█U█       ██ ",
-    "█     █     █",
-    "█    █ █    █",
-    " ██     █   █",
-    "█    █   █  █",
-    " █  █ █    █ ",
-    "█   █ █   █  ",
-    "█    ██  █ █ ",
-    "█  █       ░█",
-    " ███████████ "] # It's a lot easier to write it this way.
+# Function for opening a maze.
+def loadMaze(filename):
+    mazeStrings = []
+    with open(filename, 'r') as f:
+        for line in f.readlines():
+            mazeStrings.append(line)
 
-# ...but here's what I'm REALLY gonna use!
-mazeChars = []
-for i in mazeStrings:
-    mCpart = []
-    for j in i:
-        mCpart.append(j)
-    mazeChars.append(mCpart)
+    mazeChars = []
+    for i in mazeStrings:
+        mCpart = []
+        for j in i:
+            mCpart.append(j)
+        mazeChars.append(mCpart)
 
-smileyCoord = printMaze(mazeChars)
+    return mazeChars
 
 goalCoord = 0
-for dex,i in enumerate(mazeChars):
-    if(goalCoord != 0): break
-    for ind,j in enumerate(i):
-        if(j == "░"):
-            goalCoord = [dex, ind]
-            break
+
+
+smileyCoord = 0
 
 def game(mazeChars):
+    global smileyCoord
+    smileyCoord = printMaze(mazeChars)
+
+    global goalCoord
+    goalCoord = 0
+    for dex,i in enumerate(mazeChars):
+        if(goalCoord != 0): break
+        for ind,j in enumerate(i):
+            if(j == "░"):
+                goalCoord = [dex, ind]
+                break
+
     while True:
         chara = stdscr.getch()
-        if goSmiley(chara) and smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
+        if goSmiley(chara, mazeChars) and smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
             return
 
-def goSmiley(direction):
+def goSmiley(direction, mazeChars):
     global smileyCoord
     # Interpret the input.
     ch = [0, 0]
@@ -129,12 +139,13 @@ def goSmiley(direction):
     # Print the maze again, and reinitialize the coordinates of the character.
     smileyCoord = dontPrintMaze(mazeChars)
     if smileyCoord == [-1, -1]:
-        raise Exception("Smiley's gone?")
+        raise Exception("U went out of bounds")
     #cuPrint("smileyCoord is: {}".format(smileyCoord))
     #cuPrint("smileyCoord is: {}".format(goalCoord))
     return True
 
-game(mazeChars)
+game(loadMaze('test-maze.txt'))
+game(loadMaze('test-maze-2.txt'))
 
 curses.nocbreak()
 stdscr.keypad(False)
