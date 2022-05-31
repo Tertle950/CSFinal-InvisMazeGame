@@ -3,7 +3,7 @@
 import string
 #import keyboard
 import curses
-import libxmplite
+#import libxmplite
 #https://stackoverflow.com/questions/3523174/raw-input-without-pressing-enter
 
 # Problem: My kids need a distraction, but all I have is a Linux terminal and a Python interpreter!
