@@ -4,6 +4,8 @@ import string
 #import keyboard
 import curses
 #import libxmplite
+from time import *
+import threading
 #https://stackoverflow.com/questions/3523174/raw-input-without-pressing-enter
 
 # Problem: My kids need a distraction, but all I have is a Linux terminal and a Python interpreter!
@@ -88,6 +90,21 @@ goalCoord = 0
 
 smileyCoord = 0
 
+# To Do: https://stackoverflow.com/q/34822346
+# + https://www.geeksforgeeks.org/python-different-ways-to-kill-a-thread/
+timer = 0
+keepGoing = True
+def countdown(x):
+    global timer
+    timer = x
+    global keepGoing
+    keepGoing = True
+    while timer != 0 and keepGoing:
+        sleep(1)
+        timer -= 1
+    return timer
+    
+
 def game(mazeChars):
     global smileyCoord
     smileyCoord = printMaze(mazeChars)
@@ -100,6 +117,8 @@ def game(mazeChars):
             if(j == "░"):
                 goalCoord = [dex, ind]
                 break
+    
+    global keepGoing
 
     while True:
         chara = stdscr.getch()
