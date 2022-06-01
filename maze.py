@@ -26,6 +26,9 @@ def clear():
     global cuLine
     cuLine = 0
 
+    global timer
+    stdscr.addstr(1, 1, str(timer)+"   ")
+
 def cuPrint(x):
     global cuLine
     stdscr.addstr(cuLine+2, 1+2, x)
@@ -78,9 +81,9 @@ def loadMaze(filename):
             mazeStrings.append(line)
 
     info = mazeStrings[0]
-    info.split('/')
-    time = int(info[0])
-    name = info[1]
+    info = info.split('/')
+    input[0] = int(info[0])
+    input[1] = info[1][:-1] #the [:-1] is to kill the newline at the end
 
     mazeChars = []
     for i in range(len(mazeStrings) - 1):
@@ -90,6 +93,9 @@ def loadMaze(filename):
         mazeChars.append(mCpart)
 
     input[2] = mazeChars
+
+    #print(input)
+    #sleep(3)
 
     return input
 
@@ -104,11 +110,14 @@ timer = 0
 keepGoing = True
 def countdown():
     global timer
+    stdscr.addstr(1, 1, str(timer)+"   ")
+
     global keepGoing
     keepGoing = True
     while timer != 0 and keepGoing:
         sleep(1)
         timer -= 1
+        stdscr.addstr(1, 1, str(timer)+"   ")
     return timer
     
 
@@ -135,9 +144,9 @@ def game(input):
     timeThread = threading.Thread(target=countdown)
     timeThread.start()
 
+    global stdscr
     while True:
         chara = stdscr.getch()
-        stdscr.addstr(2, 3, str(timer)+"   ")
         if goSmiley(chara, mazeChars) and smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
             keepGoing = False
             return timer
