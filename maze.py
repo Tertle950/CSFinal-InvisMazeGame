@@ -119,24 +119,28 @@ def game(mazeChars):
                 break
     
     global keepGoing
+    keepGoing = True
 
     while True:
         chara = stdscr.getch()
         if goSmiley(chara, mazeChars) and smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
-            return
+            keepGoing = False
+            return timer
+        if timer == 0:
+            return 
 
 def goSmiley(direction, mazeChars):
     global smileyCoord
     # Interpret the input.
     ch = [0, 0]
     try:
-        if direction == 100: #d
+        if direction == 100 or direction == 261: #d
             ch = [0, 1]
-        if direction == 97: #a
+        if direction == 97 or direction == 260: #a
             ch = [0, -1]
-        if direction == 115: #s
+        if direction == 115 or direction == 258: #s
             ch = [1, 0]
-        if direction == 119: #w
+        if direction == 119 or direction == 259: #w
             ch = [-1, 0]
     except(IndexError):
         #cuPrint("U  { Please type a direction for me to go. )")
