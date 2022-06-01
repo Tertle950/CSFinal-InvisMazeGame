@@ -71,19 +71,27 @@ def dontPrintMaze(maze):
 
 # Function for opening a maze.
 def loadMaze(filename):
+    input = [0, 1, 2]
     mazeStrings = []
     with open(filename, 'r') as f:
         for line in f.readlines():
             mazeStrings.append(line)
 
+    info = mazeStrings[0]
+    info.split('/')
+    time = int(info[0])
+    name = info[1]
+
     mazeChars = []
-    for i in mazeStrings:
+    for i in range(len(mazeStrings) - 1):
         mCpart = []
-        for j in i:
+        for j in mazeStrings[i+1]:
             mCpart.append(j)
         mazeChars.append(mCpart)
 
-    return mazeChars
+    input[2] = mazeChars
+
+    return input
 
 goalCoord = 0
 
@@ -94,9 +102,8 @@ smileyCoord = 0
 # + https://www.geeksforgeeks.org/python-different-ways-to-kill-a-thread/
 timer = 0
 keepGoing = True
-def countdown(x):
+def countdown():
     global timer
-    timer = x
     global keepGoing
     keepGoing = True
     while timer != 0 and keepGoing:
@@ -105,7 +112,9 @@ def countdown(x):
     return timer
     
 
-def game(mazeChars):
+
+def game(input):
+    mazeChars = input[2]
     global smileyCoord
     smileyCoord = printMaze(mazeChars)
 
@@ -121,12 +130,18 @@ def game(mazeChars):
     global keepGoing
     keepGoing = True
 
+    global timer
+    timer = input[0]
+    timeThread = threading.Thread(target=countdown)
+    timeThread.start()
+
     while True:
         chara = stdscr.getch()
+        stdscr.addstr(2, 3, str(timer)+"   ")
         if goSmiley(chara, mazeChars) and smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
             keepGoing = False
             return timer
-        if timer == 0:
+        if timer <= 0:
             return 
 
 def goSmiley(direction, mazeChars):
