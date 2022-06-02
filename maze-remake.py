@@ -22,11 +22,12 @@ def clear():
     global cuLine
     cuLine = 0
 
-def findSmiley(maze):
+def findInMaze(maze, char):
     for ind,i in enumerate(maze):
         for dex,j in enumerate(i):
-            if j == "U":
+            if j == char:
                 return [ind, dex]
+    return [-1, -1]
 
 # Returns an array: [Time limit, Name, Maze data]
 def loadMazeFile(filename):
@@ -81,10 +82,43 @@ def goSmiley(direction, mazeChars, smileyCoord):
     mazeChars[new[0]][new[1]] = "U"
 
     # Print the maze again, and reinitialize the coordinates of the character.
-    smileyCoord = dontPrintMaze(mazeChars)
+    smileyCoord = findInMaze(mazeChars, "U")
     if smileyCoord == [-1, -1]:
         raise Exception("U went out of bounds")
-    #cuPrint("smileyCoord is: {}".format(smileyCoord))
-    #cuPrint("smileyCoord is: {}".format(goalCoord))
     return [smileyCoord, mazeChars]
 
+timer = 0
+keepGoing = True
+def countdown():
+    global timer
+
+    global keepGoing
+    keepGoing = True
+
+    while timer != 0 and keepGoing:
+        sleep(1)
+        timer -= 1
+    return timer
+
+def game(input):
+    mazeChars = input[2]
+    smileyCoord = findInMaze(mazeChars, "U")
+
+    goalCoord = findInMaze(mazeChars, "░")
+    
+    global keepGoing
+    keepGoing = True
+
+    global timer
+    timer = input[0]
+    timeThread = threading.Thread(target=countdown)
+    timeThread.start()
+
+    global stdscr
+    while True:
+        chara = stdscr.getch()
+        if smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
+            keepGoing = False
+            return timer
+        if timer <= 0:
+            return 
