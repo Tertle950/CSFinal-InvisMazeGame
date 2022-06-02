@@ -114,8 +114,6 @@ def countdown():
         sleep(1)
         timer -= 1
     return timer
-    
-
 
 def game(input):
     mazeChars = input[2]
