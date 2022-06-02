@@ -22,6 +22,12 @@ def clear():
     global cuLine
     cuLine = 0
 
+def findSmiley(maze):
+    for ind,i in enumerate(maze):
+        for dex,j in enumerate(i):
+            if j == "U":
+                return [ind, dex]
+
 # Returns an array: [Time limit, Name, Maze data]
 def loadMazeFile(filename):
     input = [0, 1, 2] # init with 3 values
@@ -47,7 +53,7 @@ def loadMazeFile(filename):
     #print(input)
     #sleep(3)
 
-    return input
+    return mazeInfo
 
 def goSmiley(direction, mazeChars, smileyCoord):
     # Interpret the input.
@@ -81,3 +87,4 @@ def goSmiley(direction, mazeChars, smileyCoord):
     #cuPrint("smileyCoord is: {}".format(smileyCoord))
     #cuPrint("smileyCoord is: {}".format(goalCoord))
     return [smileyCoord, mazeChars]
+
