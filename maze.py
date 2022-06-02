@@ -26,9 +26,6 @@ def clear():
     global cuLine
     cuLine = 0
 
-    global timer
-    stdscr.addstr(1, 1, str(timer)+"   ")
-
 def cuPrint(x):
     global cuLine
     stdscr.addstr(cuLine+2, 1+2, x)
@@ -36,7 +33,6 @@ def cuPrint(x):
     return
 
 def printMaze(maze):
-    clear()
     returner = [-1, -1]
     for dex,i in enumerate(maze):
         line = ""
@@ -54,7 +50,6 @@ def printMaze(maze):
     return returner
 
 def dontPrintMaze(maze):
-    clear()
     returner = [-1, -1]
     for dex,i in enumerate(maze):
         line = ""
@@ -71,6 +66,10 @@ def dontPrintMaze(maze):
             else: line += " "
         cuPrint(line)
     return returner
+
+def updateScreen(maze, visible):
+    clear()
+    return
 
 # Function for opening a maze.
 def loadMaze(filename):
@@ -110,14 +109,13 @@ timer = 0
 keepGoing = True
 def countdown():
     global timer
-    stdscr.addstr(1, 1, str(timer)+"   ")
 
     global keepGoing
     keepGoing = True
+
     while timer != 0 and keepGoing:
         sleep(1)
         timer -= 1
-        stdscr.addstr(1, 1, str(timer)+"   ")
     return timer
     
 
