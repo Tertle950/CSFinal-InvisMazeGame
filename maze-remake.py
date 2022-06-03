@@ -3,9 +3,11 @@
 import string
 #import keyboard
 import curses
+from curses import wrapper
 #import libxmplite
 from time import *
 import threading
+
 
 stdscr = curses.initscr()
 curses.noecho()
@@ -54,7 +56,7 @@ def loadMazeFile(filename):
     #print(input)
     #sleep(3)
 
-    return mazeInfo
+    return input
 
 def goSmiley(direction, mazeChars, smileyCoord):
     # Interpret the input.
@@ -62,20 +64,20 @@ def goSmiley(direction, mazeChars, smileyCoord):
     try:
         if direction == 100 or direction == 261: #d
             ch = [0, 1]
-        if direction == 97 or direction == 260: #a
+        elif direction == 97 or direction == 260: #a
             ch = [0, -1]
-        if direction == 115 or direction == 258: #s
+        elif direction == 115 or direction == 258: #s
             ch = [1, 0]
-        if direction == 119 or direction == 259: #w
+        elif direction == 119 or direction == 259: #w
             ch = [-1, 0]
     except(IndexError):
-        return smileyCoord
+        return 0
 
     if(ch[0] + ch[1] == 0):
-        return smileyCoord
+        return 0
     new = [smileyCoord[0] + ch[0], smileyCoord[1] + ch[1]]
     if (mazeChars[new[0]][new[1]] == "█"): # This is a mess.
-        return smileyCoord
+        return -3
 
     #cuPrint("smileyCoord was: {}".format(smileyCoord))
     mazeChars[smileyCoord[0]][smileyCoord[1]] = " "
@@ -85,7 +87,7 @@ def goSmiley(direction, mazeChars, smileyCoord):
     smileyCoord = findInMaze(mazeChars, "U")
     if smileyCoord == [-1, -1]:
         raise Exception("U went out of bounds")
-    return [smileyCoord, mazeChars]
+    return 0
 
 timer = 0
 keepGoing = True
@@ -101,24 +103,51 @@ def countdown():
     return timer
 
 def game(input):
+    # Initialize variables
     mazeChars = input[2]
     smileyCoord = findInMaze(mazeChars, "U")
-
     goalCoord = findInMaze(mazeChars, "░")
     
+    # Set up timer
     global keepGoing
     keepGoing = True
-
     global timer
     timer = input[0]
     timeThread = threading.Thread(target=countdown)
     timeThread.start()
 
+    result = [0, 0]
     global stdscr
     while True:
+        # Get player input
         chara = stdscr.getch()
+
+        # Update maze according to input
+        result = goSmiley(chara, mazeChars, smileyCoord)
+
+        if(result != 0):
+            try:
+                smileyCoord = result[0]
+                mazeChars = result[1]
+            except:
+                timer -= result
+        # There are technically less global variables with this approach,
+        # but this code might be absolutely terrible.
+
+        # Check for winstate and failstate
         if smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
             keepGoing = False
             return timer
-        if timer <= 0:
-            return 
+        elif timer <= 0:
+            return 0
+        
+
+def main(stdscr):
+    game(loadMazeFile("test-maze.txt"))
+
+wrapper(main)
+curses.nocbreak()
+stdscr.keypad(False)
+curses.echo()
+curses.endwin()
+print("U got to the end!")
