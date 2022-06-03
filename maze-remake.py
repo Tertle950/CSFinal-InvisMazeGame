@@ -87,7 +87,7 @@ def goSmiley(direction, mazeChars, smileyCoord):
     smileyCoord = findInMaze(mazeChars, "U")
     if smileyCoord == [-1, -1]:
         raise Exception("U went out of bounds")
-    return 0
+    return [smileyCoord, mazeChars]
 
 timer = 0
 keepGoing = True
@@ -97,7 +97,7 @@ def countdown():
     global keepGoing
     keepGoing = True
 
-    while timer != 0 and keepGoing:
+    while timer > 0 and keepGoing:
         sleep(1)
         timer -= 1
     return timer
@@ -126,11 +126,13 @@ def game(input):
         result = goSmiley(chara, mazeChars, smileyCoord)
 
         if(result != 0):
-            try:
-                smileyCoord = result[0]
-                mazeChars = result[1]
-            except:
-                timer -= result
+            #try:
+            print("Nice!")
+            smileyCoord = result[0]
+            mazeChars = result[1]
+            #except:
+            #    print("Cool!")
+            #    timer -= result
         # There are technically less global variables with this approach,
         # but this code might be absolutely terrible.
 
