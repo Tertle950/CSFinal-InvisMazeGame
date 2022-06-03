@@ -18,11 +18,18 @@ stdscr.refresh()
 curses.start_color()
 
 cuLine = 0
+maxLives = 5
 
 def clear():
     stdscr.clear()
     global cuLine
     cuLine = 0
+
+def cuPrint(x):
+    global cuLine
+    stdscr.addstr(cuLine+1, 2, x)
+    cuLine += 1
+    return
 
 def findInMaze(maze, char):
     for ind,i in enumerate(maze):
@@ -71,15 +78,15 @@ def goSmiley(direction, mazeChars, smileyCoord):
         elif direction == 119 or direction == 259: #w
             ch = [-1, 0]
     except(IndexError):
-        return 0
+        return [0]
 
     if(ch[0] + ch[1] == 0):
-        return 0
+        return [0]
     new = [smileyCoord[0] + ch[0], smileyCoord[1] + ch[1]]
     if (mazeChars[new[0]][new[1]] == "█"): # This is a mess.
-        return -3
+        return [1]
 
-    #cuPrint("smileyCoord was: {}".format(smileyCoord))
+    #print("smileyCoord was: {}".format(smileyCoord))
     mazeChars[smileyCoord[0]][smileyCoord[1]] = " "
     mazeChars[new[0]][new[1]] = "U"
 
@@ -88,6 +95,16 @@ def goSmiley(direction, mazeChars, smileyCoord):
     if smileyCoord == [-1, -1]:
         raise Exception("U went out of bounds")
     return [smileyCoord, mazeChars]
+
+def updateGameScreen(mazeChars, timer = 0, score = 0, lives = 3):
+    # For ease of copying, here are the hearts: ♥ ♡
+    clear()
+    hearts = ""
+    for i in range(maxLives):
+        if i > lives:
+            hearts.append("♡")
+        else: hearts.append("♥")
+    cuPrint(hearts + "  SC: " + score)
 
 timer = 0
 keepGoing = True
@@ -125,14 +142,12 @@ def game(input):
         # Update maze according to input
         result = goSmiley(chara, mazeChars, smileyCoord)
 
-        if(result != 0):
-            #try:
-            print("Nice!")
-            smileyCoord = result[0]
-            mazeChars = result[1]
-            #except:
-            #    print("Cool!")
-            #    timer -= result
+        if(result is not [0]):
+            if(result[0] != 1):
+                smileyCoord = result[0]
+                mazeChars = result[1]
+            else:
+                timer -= 3
         # There are technically less global variables with this approach,
         # but this code might be absolutely terrible.
 
@@ -145,11 +160,14 @@ def game(input):
         
 
 def main(stdscr):
-    game(loadMazeFile("test-maze.txt"))
+    if game(loadMazeFile("test-maze.txt")) == 0:
+        print("U died in the maze.")
+    else:
+        print("U got to the end!")
+    sleep(3)
 
 wrapper(main)
 curses.nocbreak()
 stdscr.keypad(False)
 curses.echo()
 curses.endwin()
-print("U got to the end!")
