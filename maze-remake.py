@@ -17,7 +17,8 @@ stdscr.clear()
 stdscr.refresh()
 curses.start_color()
 
-stdscr.timeout(1)
+stdscr.timeout(1) # This ensures that the live timer actually works
+# by telling the program "Hey, if the user presses nothing, keep going"
 
 cuLine = 0
 maxLives = 5
@@ -98,7 +99,7 @@ def goSmiley(direction, mazeChars, smileyCoord):
         raise Exception("U went out of bounds")
     return [smileyCoord, mazeChars]
 
-def updateGameScreen(mazeChars, isVisible, timer = 0, score = 0, lives = 3):
+def updateGameScreen(mazeChars, name, isVisible, timer = 0, score = 0, lives = 3):
     clear()
 
     # Print lives & score
@@ -109,6 +110,9 @@ def updateGameScreen(mazeChars, isVisible, timer = 0, score = 0, lives = 3):
             hearts += "♡"
         else: hearts += "♥"
     cuPrint(f"{hearts}  SC:{score}  ⧗{round(timer)}")
+
+    # print maze name
+    cuPrint(f" -= {name} =-")
 
     # Print maze, or don't. This code's a mess, but it's fine
     dots = False
@@ -134,6 +138,7 @@ def updateGameScreen(mazeChars, isVisible, timer = 0, score = 0, lives = 3):
 
 def game(input):
     # Initialize variables
+    mazeName = input[1]
     mazeChars = input[2]
     smileyCoord = findInMaze(mazeChars, "U")
     goalCoord = findInMaze(mazeChars, "░")
@@ -148,7 +153,7 @@ def game(input):
 
     result = [0, 0]
 
-    updateGameScreen(mazeChars, isVisible, timeEnd - time(), score, lives)
+    updateGameScreen(mazeChars, mazeName, isVisible, timeEnd - time(), score, lives)
     while True:
         # Get player input
         chara = stdscr.getch()
@@ -167,18 +172,14 @@ def game(input):
         # but this code might be absolutely terrible.
 
         # This should run every loop...
-        updateGameScreen(mazeChars, isVisible, timeEnd - time(), score, lives)
-        stdscr.refresh()
+        updateGameScreen(mazeChars, mazeName, isVisible, timeEnd - time(), score, lives)
 
         # Check for winstate and failstate
         if smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
-            updateGameScreen(mazeChars, isVisible, timeEnd - time(), score, lives)
             keepGoing = False
             return timeEnd - time()
         elif time() >= timeEnd:
             return 0
-        
-        sleep(0.03) # 30fps, let's not overload the computer.
 
 def main(stdscr):
     if game(loadMazeFile("test-maze.txt")) == 0:
