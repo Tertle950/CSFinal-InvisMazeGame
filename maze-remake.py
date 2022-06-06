@@ -197,5 +197,4 @@ curses.nocbreak()
 stdscr.keypad(False)
 curses.echo()
 curses.endwin()
-
 # trailing newline rofl
