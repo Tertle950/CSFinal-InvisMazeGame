@@ -108,7 +108,7 @@ def updateGameScreen(mazeChars, name, isVisible, timer = 0, score = 0, lives = 3
         if i > lives:
             hearts += "♡"
         else: hearts += "♥"
-    cuPrint(f"{hearts}  SC:{score}  ⧗{round(timer)}")
+    cuPrint(f"{hearts}  s>{score}  ⧗{round(timer)}")
 
     # print maze name
     cuPrint(f" -= {name} =-")
@@ -186,7 +186,7 @@ def game(input):
             updateGameScreen(mazeChars, mazeName, isVisible, timeEnd - time(), score, lives)
 
 def main(stdscr):
-    if game(loadMazeFile("test-maze.txt")) == 0:
+    if game(loadMazeFile("test-maze-2.txt")) == 0:
         print("U died in the maze.")
     else:
         print("U got to the end!")
