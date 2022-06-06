@@ -96,45 +96,65 @@ def goSmiley(direction, mazeChars, smileyCoord):
         raise Exception("U went out of bounds")
     return [smileyCoord, mazeChars]
 
-def updateGameScreen(mazeChars, timer = 0, score = 0, lives = 3):
-    # For ease of copying, here are the hearts: ♥ ♡
+def updateGameScreen(mazeChars, isVisible, timer = 0, score = 0, lives = 3):
     clear()
+
+    # Print lives & score
+    # For ease of copying, here are the hearts: ♥ ♡
     hearts = ""
     for i in range(maxLives):
         if i > lives:
-            hearts.append("♡")
-        else: hearts.append("♥")
-    cuPrint(hearts + "  SC: " + score)
+            hearts += "♡"
+        else: hearts += "♥"
+    cuPrint(f"{hearts}  SC: {score}  T: {round(timer)}")
 
-timer = 0
-keepGoing = True
-def countdown():
-    global timer
+    # Print maze, or don't. This code's a mess, but it's fine
+    dots = False
+    for dex,i in enumerate(mazeChars):
+        line = ""
+        dots = False
+        for ind,j in enumerate(i):
+            if j == " " and dots:
+                line += "."
+            elif j == "█":
+                dots = True
+                if isVisible:
+                    line += "█"
+                else: line += "."
+            elif isVisible or j == "U" or j == "░":
+                line += j
+            else:
+                line += "." if dots else " "
 
-    global keepGoing
-    keepGoing = True
+            if j == "U":
+                returner = [dex, ind]
+        cuPrint(line)
 
-    while timer > 0 and keepGoing:
-        sleep(1)
-        timer -= 1
-    return timer
+
 
 def game(input):
     # Initialize variables
     mazeChars = input[2]
     smileyCoord = findInMaze(mazeChars, "U")
     goalCoord = findInMaze(mazeChars, "░")
+    isVisible = True
+    
+    # These should be changed later on. Maybe also made global.
+    score = 42
+    lives = 1
     
     # Set up timer
     global keepGoing
     keepGoing = True
-    global timer
-    timer = input[0]
-    timeThread = threading.Thread(target=countdown)
-    timeThread.start()
+
+    timeStart = time()
+    timeEnd = time() + input[0]
+
+    timeCool = round(time())
 
     result = [0, 0]
-    global stdscr
+
+    updateGameScreen(mazeChars, isVisible, timeEnd - time(), score, lives)
     while True:
         # Get player input
         chara = stdscr.getch()
@@ -146,25 +166,32 @@ def game(input):
             if(result[0] != 1):
                 smileyCoord = result[0]
                 mazeChars = result[1]
+                isVisible = False
             else:
-                timer -= 3
+                timeEnd -= 3
+            updateGameScreen(mazeChars, isVisible, timeEnd - time(), score, lives)
         # There are technically less global variables with this approach,
         # but this code might be absolutely terrible.
+
+
+        if round(time()) != timeCool:
+            timeCool = round(time())
+            updateGameScreen(mazeChars, isVisible, timeEnd - time(), score, lives)
 
         # Check for winstate and failstate
         if smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
             keepGoing = False
-            return timer
-        elif timer <= 0:
+            return timeEnd - time()
+        elif time() >= timeEnd:
             return 0
         
 
 def main(stdscr):
     if game(loadMazeFile("test-maze.txt")) == 0:
-        print("U died in the maze.")
+        cuPrint("U died in the maze.")
     else:
-        print("U got to the end!")
-    sleep(3)
+        cuPrint("U got to the end!")
+    sleep(2)
 
 wrapper(main)
 curses.nocbreak()
