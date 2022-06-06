@@ -105,7 +105,7 @@ def updateGameScreen(mazeChars, name, isVisible, timer = 0, score = 0, lives = 3
     # For ease of copying, here are the hearts: ♥ ♡
     hearts = ""
     for i in range(maxLives):
-        if i > lives:
+        if i+1 > lives:
             hearts += "♡"
         else: hearts += "♥"
     cuPrint(f"{hearts}  S:{score}  ⧗{round(timer)}")
@@ -137,17 +137,13 @@ def updateGameScreen(mazeChars, name, isVisible, timer = 0, score = 0, lives = 3
     
     stdscr.refresh()
 
-def game(input):
+def game(input, score = 0, lives = 1):
     # Initialize variables
     mazeName = input[1]
     mazeChars = input[2]
     smileyCoord = findInMaze(mazeChars, "U")
     goalCoord = findInMaze(mazeChars, "░")
     isVisible = True
-    
-    # These should be changed later on. Maybe also made global.
-    score = 0
-    lives = 1
 
     timeStart = time()
     timeEnd = time() + input[0]
@@ -186,10 +182,7 @@ def game(input):
             updateGameScreen(mazeChars, mazeName, isVisible, timeEnd - time(), score, lives)
 
 def main(stdscr):
-    if game(loadMazeFile("test-maze-2.txt")) == 0:
-        print("U died in the maze.")
-    else:
-        print("U got to the end!")
+    game(loadMazeFile("test-maze-2.txt"), 44, 3)
     sleep(2)
 
 wrapper(main)
