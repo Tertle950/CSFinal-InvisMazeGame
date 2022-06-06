@@ -17,8 +17,7 @@ stdscr.clear()
 stdscr.refresh()
 curses.start_color()
 
-stdscr.timeout(1) # This ensures that the live timer actually works
-# by telling the program "Hey, if the user presses nothing, keep going"
+stdscr.timeout(1)
 
 cuLine = 0
 maxLives = 5
@@ -135,6 +134,8 @@ def updateGameScreen(mazeChars, name, isVisible, timer = 0, score = 0, lives = 3
             if j == "U":
                 returner = [dex, ind]
         cuPrint(line)
+    
+    stdscr.refresh()
 
 def game(input):
     # Initialize variables
@@ -170,16 +171,19 @@ def game(input):
                 timeEnd -= 3
         # There are technically less global variables with this approach,
         # but this code might be absolutely terrible.
-
-        # This should run every loop...
-        updateGameScreen(mazeChars, mazeName, isVisible, timeEnd - time(), score, lives)
-
-        # Check for winstate and failstate
+        
+        # Check for winstate and failstate.
+        # Also, update the screen.
+        sleep(0.03)
         if smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
+            updateGameScreen(mazeChars, mazeName, True, timeEnd - time(), score, lives)
             keepGoing = False
             return timeEnd - time()
         elif time() >= timeEnd:
+            updateGameScreen(mazeChars, mazeName, True, 0, score, lives)
             return 0
+        else:
+            updateGameScreen(mazeChars, mazeName, isVisible, timeEnd - time(), score, lives)
 
 def main(stdscr):
     if game(loadMazeFile("test-maze.txt")) == 0:
@@ -194,4 +198,4 @@ stdscr.keypad(False)
 curses.echo()
 curses.endwin()
 
-# trailing newline lmao
+# trailing newline rofl
