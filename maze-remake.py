@@ -17,6 +17,8 @@ stdscr.clear()
 stdscr.refresh()
 curses.start_color()
 
+stdscr.timeout(1)
+
 cuLine = 0
 maxLives = 5
 
@@ -106,7 +108,7 @@ def updateGameScreen(mazeChars, isVisible, timer = 0, score = 0, lives = 3):
         if i > lives:
             hearts += "♡"
         else: hearts += "♥"
-    cuPrint(f"{hearts}  SC: {score}  T: {round(timer)}")
+    cuPrint(f"{hearts}  SC:{score}  ⧗{round(timer)}")
 
     # Print maze, or don't. This code's a mess, but it's fine
     dots = False
@@ -130,8 +132,6 @@ def updateGameScreen(mazeChars, isVisible, timer = 0, score = 0, lives = 3):
                 returner = [dex, ind]
         cuPrint(line)
 
-
-
 def game(input):
     # Initialize variables
     mazeChars = input[2]
@@ -142,15 +142,9 @@ def game(input):
     # These should be changed later on. Maybe also made global.
     score = 42
     lives = 1
-    
-    # Set up timer
-    global keepGoing
-    keepGoing = True
 
     timeStart = time()
     timeEnd = time() + input[0]
-
-    timeCool = round(time())
 
     result = [0, 0]
 
@@ -162,35 +156,35 @@ def game(input):
         # Update maze according to input
         result = goSmiley(chara, mazeChars, smileyCoord)
 
-        if(result is not [0]):
+        if(result[0] != 0):
             if(result[0] != 1):
                 smileyCoord = result[0]
                 mazeChars = result[1]
                 isVisible = False
             else:
                 timeEnd -= 3
-            updateGameScreen(mazeChars, isVisible, timeEnd - time(), score, lives)
         # There are technically less global variables with this approach,
         # but this code might be absolutely terrible.
 
-
-        if round(time()) != timeCool:
-            timeCool = round(time())
-            updateGameScreen(mazeChars, isVisible, timeEnd - time(), score, lives)
+        # This should run every loop...
+        updateGameScreen(mazeChars, isVisible, timeEnd - time(), score, lives)
+        stdscr.refresh()
 
         # Check for winstate and failstate
         if smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
+            updateGameScreen(mazeChars, isVisible, timeEnd - time(), score, lives)
             keepGoing = False
             return timeEnd - time()
         elif time() >= timeEnd:
             return 0
         
+        sleep(0.03) # 30fps, let's not overload the computer.
 
 def main(stdscr):
     if game(loadMazeFile("test-maze.txt")) == 0:
-        cuPrint("U died in the maze.")
+        print("U died in the maze.")
     else:
-        cuPrint("U got to the end!")
+        print("U got to the end!")
     sleep(2)
 
 wrapper(main)
