@@ -108,7 +108,7 @@ def updateGameScreen(mazeChars, name, isVisible, timer = 0, score = 0, lives = 3
         if i > lives:
             hearts += "♡"
         else: hearts += "♥"
-    cuPrint(f"{hearts}  s>{score}  ⧗{round(timer)}")
+    cuPrint(f"{hearts}  S:{score}  ⧗{round(timer)}")
 
     # print maze name
     cuPrint(f" -= {name} =-")
@@ -146,7 +146,7 @@ def game(input):
     isVisible = True
     
     # These should be changed later on. Maybe also made global.
-    score = 42
+    score = 0
     lives = 1
 
     timeStart = time()
