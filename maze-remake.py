@@ -6,6 +6,7 @@ import curses
 from curses import wrapper
 #import libxmplite
 from time import *
+from os.path import exists
 import threading
 
 
@@ -172,9 +173,9 @@ def game(input, score = 0, lives = 1):
         # Also, update the screen.
         sleep(0.03)
         if smileyCoord[0] == goalCoord[0] and smileyCoord[1] == goalCoord[1]:
-            updateGameScreen(mazeChars, mazeName, True, timeEnd - time(), score, lives)
-            keepGoing = False
-            return timeEnd - time()
+            yes = int(timeEnd - time())
+            updateGameScreen(mazeChars, mazeName, True, yes, score, lives)
+            return yes
         elif time() >= timeEnd:
             updateGameScreen(mazeChars, mazeName, True, 0, score, lives)
             return 0
@@ -182,9 +183,25 @@ def game(input, score = 0, lives = 1):
             updateGameScreen(mazeChars, mazeName, isVisible, timeEnd - time(), score, lives)
 
 def main(stdscr):
-    print("Choose a maze number: ")
-    game(loadMazeFile(f"mazes/{input()}"), 44, 3)
-    sleep(2)
+    lives = 3
+    score = 0
+    exLife = 2
+    level = 1
+    while(lives != 0):
+        if(not exists(f"mazes/{level}.txt")):
+            level = 1
+        gameResult = game(loadMazeFile(f"mazes/{level}.txt"), score, lives)
+        if(gameResult == 0):
+            lives -= 1
+        else:
+            score += gameResult
+            if (score / 100) > exLife:
+                exLife += 2
+                lives += 1
+        level += 1
+        sleep(2)
+    clear()
+    cuPrint()
 
 wrapper(main)
 curses.nocbreak()
