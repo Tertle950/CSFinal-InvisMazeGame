@@ -201,7 +201,8 @@ def main(stdscr):
         level += 1
         sleep(2)
     clear()
-    cuPrint()
+    cuPrint(f"U got a score of {score}. Game over!")
+    sleep(5)
 
 wrapper(main)
 curses.nocbreak()
