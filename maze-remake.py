@@ -182,7 +182,8 @@ def game(input, score = 0, lives = 1):
             updateGameScreen(mazeChars, mazeName, isVisible, timeEnd - time(), score, lives)
 
 def main(stdscr):
-    game(loadMazeFile("test-maze-2.txt"), 44, 3)
+    print("Choose a maze number: ")
+    game(loadMazeFile(f"mazes/{input()}"), 44, 3)
     sleep(2)
 
 wrapper(main)
