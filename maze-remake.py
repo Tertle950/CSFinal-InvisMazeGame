@@ -126,14 +126,12 @@ def updateGameScreen(mazeChars, name, isVisible, timer = 0, score = 0, lives = 3
                 dots = True
                 if isVisible:
                     line += "█"
-                else: line += "."
+                else:
+                    line += "."
             elif isVisible or j == "U" or j == "░":
                 line += j
             else:
-                line += "." if dots else " "
-
-            if j == "U":
-                returner = [dex, ind]
+                line += " "
         cuPrint(line)
     
     stdscr.refresh()
